@@ -1,5 +1,6 @@
 package com.statemachine.services;
 
+import com.statemachine.Interceptor.PaymentStateChangeInterceptor;
 import com.statemachine.model.Payment;
 import com.statemachine.model.PaymentEvent;
 import com.statemachine.model.PaymentState;
@@ -12,8 +13,6 @@ import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.statemachine.support.DefaultStateMachineContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -35,7 +34,7 @@ public class PaymentServiceImpl implements PaymentService {
     public StateMachine<PaymentState, PaymentEvent> preAuth(Long paymentId) {
         StateMachine<PaymentState, PaymentEvent> stateMachine = build(paymentId);
 
-        sendEvent(paymentId, stateMachine, PaymentEvent.PRE_AUTH_APPROVED);
+        sendEvent(paymentId, stateMachine, PaymentEvent.PRE_AUTHORIZE);
 
         return stateMachine;
     }
