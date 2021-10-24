@@ -5,6 +5,7 @@ import com.statemachine.model.PaymentEvent;
 import com.statemachine.model.PaymentState;
 import com.statemachine.repository.PaymentRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,13 +38,33 @@ class PaymentServiceImplTest {
         System.out.println("Should be NEW");
         System.out.println(savedPayment.getState());
 
-        StateMachine<PaymentState, PaymentEvent> stateMachine = paymentService.preAuth(savedPayment.getId());
+        StateMachine<PaymentState, PaymentEvent> sm = paymentService.preAuth(savedPayment.getId());
 
-        Payment preAuthedPayment = paymentRepository.findById(savedPayment.getId()).get();
+        Payment preAuthedPayment = paymentRepository.getOne(savedPayment.getId());
 
-        System.out.println("Should be PRE_AUTH");
-        System.out.println("State Machine state : "  + stateMachine.getState().getId());
-        System.out.println("Object State : " + preAuthedPayment.getState());
+        System.out.println("Should be PRE_AUTH or PRE_AUTH_ERROR");
+        System.out.println(sm.getState().getId());
 
+        System.out.println(preAuthedPayment);
+
+    }
+
+
+    @Transactional
+    @RepeatedTest(10)
+    void testAuth() {
+        Payment savedPayment = paymentService.newPayment(payment);
+
+        StateMachine<PaymentState, PaymentEvent> preAuthSM = paymentService.preAuth(savedPayment.getId());
+
+        if (preAuthSM.getState().getId() == PaymentState.PRE_AUTH) {
+            System.out.println("Payment is Pre Authorized");
+
+            StateMachine<PaymentState, PaymentEvent> authSM = paymentService.authorizePayment(savedPayment.getId());
+
+            System.out.println("Result of Auth: " + authSM.getState().getId());
+        } else {
+            System.out.println("Payment failed pre-auth...");
+        }
     }
 }
