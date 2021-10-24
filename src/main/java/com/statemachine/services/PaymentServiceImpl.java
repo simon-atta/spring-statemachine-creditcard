@@ -68,6 +68,10 @@ public class PaymentServiceImpl implements PaymentService {
         stateMachine.sendEvent(paymentMessage);
     }
 
+
+    /**
+     * Update database object with new state
+     */
     private StateMachine<PaymentState, PaymentEvent> build(Long paymentId) {
         Payment payment = paymentRepository.findById(paymentId).get();
 

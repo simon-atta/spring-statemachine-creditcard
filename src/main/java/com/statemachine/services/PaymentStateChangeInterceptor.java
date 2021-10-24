@@ -16,6 +16,10 @@ import java.util.Optional;
 
 import static com.statemachine.services.PaymentServiceImpl.PAYMENT_ID_HEADER;
 
+
+/**
+ * This interceptor will be used to save the change into database
+ */
 @RequiredArgsConstructor
 @Component
 public class PaymentStateChangeInterceptor extends StateMachineInterceptorAdapter<PaymentState, PaymentEvent> {
@@ -29,7 +33,7 @@ public class PaymentStateChangeInterceptor extends StateMachineInterceptorAdapte
                                StateMachine<PaymentState, PaymentEvent> stateMachine) {
 
         Optional.ofNullable(message).flatMap(msg
-                -> Optional.ofNullable((Long) msg.getHeaders().getOrDefault(PAYMENT_ID_HEADER, -1L))).ifPresent(paymentId -> { 
+                -> Optional.ofNullable((Long) msg.getHeaders().getOrDefault(PAYMENT_ID_HEADER, -1L))).ifPresent(paymentId -> {
             Payment payment = paymentRepository.findById(paymentId).get();
             payment.setState(state.getId());
             paymentRepository.save(payment);
