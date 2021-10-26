@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.statemachine.services.PaymentServiceImpl.PAYMENT_ID_HEADER;
+import static com.statemachine.services.StateMachinePaymentServiceImpl.PAYMENT_ID_HEADER;
 
 
 /**

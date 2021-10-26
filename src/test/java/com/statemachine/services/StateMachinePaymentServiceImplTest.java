@@ -1,5 +1,7 @@
 package com.statemachine.services;
 
+import com.statemachine.controller.dto.DtoPaymentRequest;
+import com.statemachine.controller.dto.DtoPaymentResponse;
 import com.statemachine.model.Payment;
 import com.statemachine.model.PaymentEvent;
 import com.statemachine.model.PaymentState;
@@ -15,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 
 @SpringBootTest
-class PaymentServiceImplTest {
+class StateMachinePaymentServiceImplTest {
+
+    @Autowired
+    StateMachinePaymentService stateMachinePaymentService;
 
     @Autowired
     PaymentService paymentService;
@@ -23,22 +28,22 @@ class PaymentServiceImplTest {
     @Autowired
     PaymentRepository paymentRepository;
 
-    Payment payment;
+    DtoPaymentRequest payment;
 
     @BeforeEach
     void setUp() {
-        payment = Payment.builder().amount(new BigDecimal("12.99")).build();
+        payment = new DtoPaymentRequest(new BigDecimal("12.99"));
     }
 
     @Transactional
     @Test
     void preAuth() {
-        Payment savedPayment = paymentService.newPayment(payment);
+        DtoPaymentResponse savedPayment = paymentService.newPayment(payment);
 
         System.out.println("Should be NEW");
         System.out.println(savedPayment.getState());
 
-        StateMachine<PaymentState, PaymentEvent> sm = paymentService.preAuth(savedPayment.getId());
+        StateMachine<PaymentState, PaymentEvent> sm = stateMachinePaymentService.preAuth(savedPayment.getId());
 
         Payment preAuthedPayment = paymentRepository.getOne(savedPayment.getId());
 
@@ -53,14 +58,14 @@ class PaymentServiceImplTest {
     @Transactional
     @RepeatedTest(10)
     void testAuth() {
-        Payment savedPayment = paymentService.newPayment(payment);
+        DtoPaymentResponse savedPayment = paymentService.newPayment(payment);
 
-        StateMachine<PaymentState, PaymentEvent> preAuthSM = paymentService.preAuth(savedPayment.getId());
+        StateMachine<PaymentState, PaymentEvent> preAuthSM = stateMachinePaymentService.preAuth(savedPayment.getId());
 
         if (preAuthSM.getState().getId() == PaymentState.PRE_AUTH) {
             System.out.println("Payment is Pre Authorized");
 
-            StateMachine<PaymentState, PaymentEvent> authSM = paymentService.authorizePayment(savedPayment.getId());
+            StateMachine<PaymentState, PaymentEvent> authSM = stateMachinePaymentService.authorizePayment(savedPayment.getId());
 
             System.out.println("Result of Auth: " + authSM.getState().getId());
         } else {

@@ -1,16 +1,16 @@
 package com.statemachine.services;
 
-import com.statemachine.model.Payment;
-import com.statemachine.model.PaymentEvent;
-import com.statemachine.model.PaymentState;
-import org.springframework.statemachine.StateMachine;
+import com.statemachine.controller.dto.DtoPaymentRequest;
+import com.statemachine.controller.dto.DtoPaymentResponse;
+
+import java.util.List;
 
 public interface PaymentService {
 
-    Payment newPayment(Payment payment);
+    DtoPaymentResponse newPayment(DtoPaymentRequest payment);
 
-    StateMachine<PaymentState, PaymentEvent> preAuth(Long paymentId);
+    List<DtoPaymentResponse> getAllPayments();
 
-    StateMachine<PaymentState, PaymentEvent> authorizePayment(Long paymentId);
+    void authPayment(Long id);
 
 }

@@ -23,4 +23,9 @@ public class Payment {
     private PaymentState state;
 
     private BigDecimal amount;
+
+    public Payment(PaymentState state, BigDecimal amount) {
+        this.state = state;
+        this.amount = amount;
+    }
 }

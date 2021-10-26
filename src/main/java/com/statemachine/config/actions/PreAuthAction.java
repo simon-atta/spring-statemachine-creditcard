@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
-import static com.statemachine.services.PaymentServiceImpl.PAYMENT_ID_HEADER;
+import static com.statemachine.services.StateMachinePaymentServiceImpl.PAYMENT_ID_HEADER;
 
 @Component
 public class PreAuthAction implements Action<PaymentState, PaymentEvent> {
